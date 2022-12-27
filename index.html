@@ -16,15 +16,22 @@
       color: #fff;
       cursor: pointer;
     }
+    input[type="range"] {
+      width: 300px;
+    }
   </style>
 </head>
 <body>
   <h1>Microphone Input</h1>
   <button id="start-button">Start</button>
   <button id="stop-button">Stop</button>
+  <br>
+  <label for="volume">Volume:</label>
+  <input id="volume" type="range" min="0" max="1" step="0.01" value="1">
   <script>
     const startButton = document.getElementById('start-button');
     const stopButton = document.getElementById('stop-button');
+    const volumeInput = document.getElementById('volume');
 
     startButton.addEventListener('click', function() {
       startMicrophone();
@@ -34,9 +41,14 @@
       stopMicrophone();
     });
 
+    volumeInput.addEventListener('input', function() {
+      setVolume(this.value);
+    });
+
     let audioContext;
     let microphone;
     let destination;
+    let gainNode;
 
     function startMicrophone() {
       navigator.mediaDevices.getUserMedia({ audio: true })
@@ -44,7 +56,12 @@
           audioContext = new AudioContext();
           microphone = audioContext.createMediaStreamSource(stream);
           destination = audioContext.destination;
-          microphone.connect(destination);
+
+          // create a gain node to control the volume
+          gainNode = audioContext.createGain();
+          gainNode.gain.value = volumeInput.value;
+
+          microphone.connect(gainNode).connect(destination);
         })
         .catch(function(err) {
           console.error('Error accessing microphone:', err);
@@ -59,6 +76,12 @@
       if (audioContext) {
         audioContext.close();
         audioContext = null;
+      }
+    }
+
+    function setVolume(volume) {
+      if (gainNode) {
+        gainNode.gain.value = volume;
       }
     }
   </script>
