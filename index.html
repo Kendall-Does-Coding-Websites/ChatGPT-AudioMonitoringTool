@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      background-color: #333;
+      color: #fff;
+      font-family: sans-serif;
+      text-align: center;
+    }
+    button {
+      font-size: 24px;
+      padding: 10px;
+      border: none;
+      background-color: #00bcd4;
+      color: #fff;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Microphone Input</h1>
+  <button id="start-button">Start</button>
+  <button id="stop-button">Stop</button>
+  <script>
+    const startButton = document.getElementById('start-button');
+    const stopButton = document.getElementById('stop-button');
+
+    startButton.addEventListener('click', function() {
+      startMicrophone();
+    });
+
+    stopButton.addEventListener('click', function() {
+      stopMicrophone();
+    });
+
+    let audioContext;
+    let microphone;
+    let destination;
+
+    function startMicrophone() {
+      navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(function(stream) {
+          audioContext = new AudioContext();
+          microphone = audioContext.createMediaStreamSource(stream);
+          destination = audioContext.destination;
+          microphone.connect(destination);
+        })
+        .catch(function(err) {
+          console.error('Error accessing microphone:', err);
+        });
+    }
+
+    function stopMicrophone() {
+      if (microphone) {
+        microphone.disconnect();
+        microphone = null;
+      }
+      if (audioContext) {
+        audioContext.close();
+        audioContext = null;
+      }
+    }
+  </script>
+</body>
+</html>
