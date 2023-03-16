@@ -1,0 +1,17 @@
+body {
+  background-color: #333;
+  color: #fff;
+  font-family: sans-serif;
+  text-align: center;
+}
+button {
+  font-size: 24px;
+  padding: 10px;
+  border: none;
+  background-color: #00bcd4;
+  color: #fff;
+  cursor: pointer;
+}
+input[type="range"] {
+    width: 300px;
+}
